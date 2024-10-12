@@ -162,7 +162,6 @@ vim.opt.scrolloff = 10
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
-vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
@@ -662,6 +661,9 @@ require('lazy').setup({
           end,
         },
       }
+
+      vim.api.nvim_set_keymap('n', '<C-q>', ':ClangdSwitchSourceHeader<CR>', { noremap = true, silent = true })
+      vim.api.nvim_set_keymap('i', '<C-q>', '<C-o>:ClangdSwitchSourceHeader<CR>', { noremap = true, silent = true })
     end,
   },
 
@@ -779,7 +781,7 @@ require('lazy').setup({
 
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
-          ['<CR>'] = cmp.mapping.confirm { select = true },
+          -- ['<CR>'] = cmp.mapping.confirm { select = true },
           ['<Tab>'] = cmp.mapping.select_next_item(),
           ['<S-Tab>'] = cmp.mapping.select_prev_item(),
 
@@ -888,7 +890,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'cpp', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -951,6 +953,25 @@ require('lazy').setup({
     },
   },
 })
+
+-- Trigger the function automatically on CursorHold (after hovering for a moment)
+-- vim.cmd [[ autocmd CursorHold * lua vim.lsp.buf.hover() ]]
+vim.cmd [[ let g:load_doxygen_syntax=1 ]]
+
+function Close_Floats()
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    if vim.api.nvim_win_get_config(win).relative == 'win' then
+      vim.api.nvim_win_close(win, false)
+    end
+  end
+end
+
+vim.keymap.set('n', '<Esc>', function()
+  Close_Floats()
+  if vim.bo.modifiable then
+    vim.cmd 'nohlsearch'
+  end
+end)
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
