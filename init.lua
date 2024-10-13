@@ -973,5 +973,20 @@ vim.keymap.set('n', '<Esc>', function()
   end
 end)
 
+local autocmd = vim.api.nvim_create_autocmd
+local augroup = vim.api.nvim_create_augroup
+
+-- General Settings
+local general = augroup('General', { clear = true })
+autocmd({ 'FocusLost', 'BufLeave', 'BufWinLeave', 'InsertLeave' }, {
+  -- nested = true, -- for format on save
+  callback = function()
+    if vim.bo.filetype ~= '' and vim.bo.buftype == '' then
+      vim.cmd 'silent! w'
+    end
+  end,
+  group = general,
+  desc = 'Auto Save',
+})
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
