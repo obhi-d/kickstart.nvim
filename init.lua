@@ -381,11 +381,18 @@ require('lazy').setup({
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
         --
-        -- defaults = {
-        --   mappings = {
-        --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-        --   },
-        -- },
+        defaults = {
+          mappings = {
+            n = {
+              ['<c-d>'] = require('telescope.actions').delete_buffer,
+            }, -- n
+            i = {
+              ['<C-h>'] = 'which_key',
+              ['<c-d>'] = require('telescope.actions').delete_buffer,
+              ['<c-enter>'] = 'to_fuzzy_refine',
+            }, -- i
+          },
+        },
         -- pickers = {}
         extensions = {
           ['ui-select'] = {
@@ -973,20 +980,10 @@ vim.keymap.set('n', '<Esc>', function()
   end
 end)
 
-local autocmd = vim.api.nvim_create_autocmd
-local augroup = vim.api.nvim_create_augroup
+-- local autocmd = vim.api.nvim_create_autocmd
+-- local augroup = vim.api.nvim_create_augroup
 
 -- General Settings
-local general = augroup('General', { clear = true })
-autocmd({ 'FocusLost', 'BufLeave', 'BufWinLeave', 'InsertLeave' }, {
-  -- nested = true, -- for format on save
-  callback = function()
-    if vim.bo.filetype ~= '' and vim.bo.buftype == '' then
-      vim.cmd 'silent! w'
-    end
-  end,
-  group = general,
-  desc = 'Auto Save',
-})
+-- local general = augroup('General', { clear = true })
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
