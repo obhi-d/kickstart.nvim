@@ -980,6 +980,32 @@ vim.keymap.set('n', '<Esc>', function()
   end
 end)
 
+-- Define a function to remove the current quickfix entry
+
+-- Define a function to remove the current quickfix entry
+local function delete_quickfix_entry()
+  local current_line = vim.fn.line '.'
+  local qf_list = vim.fn.getqflist()
+  -- Remove the current entry
+  table.remove(qf_list, current_line)
+  -- Update the quickfix list without reopening the window
+  vim.fn.setqflist(qf_list, 'r')
+  -- Stay in the quickfix window and move cursor to the next entry
+  local new_line = math.min(current_line, #qf_list)
+  vim.api.nvim_win_set_cursor(0, { new_line, 0 }) -- Move cursor to the next valid entry
+end
+
+-- Bind dd to delete the current entry in quickfix window
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'qf',
+  callback = function()
+    vim.api.nvim_buf_set_keymap(0, 'n', 'dd', '', {
+      noremap = true,
+      silent = true,
+      callback = delete_quickfix_entry,
+    })
+  end,
+})
 -- local autocmd = vim.api.nvim_create_autocmd
 -- local augroup = vim.api.nvim_create_augroup
 
